@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 // @material-ui/icons
 import Search from '@material-ui/icons/Search.js';
+import Warning from "@material-ui/icons/Warning";
 
 // core components
 import Header from "components/Header/Header.js";
@@ -16,6 +17,7 @@ import Button from 'components/CustomButtons/Button.js';
 import HeaderLinks from "components/Header/HeaderLinks.js";
 import Parallax from "components/Parallax/Parallax.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
+import SnackbarContent from "components/Snackbar/SnackbarContent.js";
 
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
 
@@ -43,7 +45,7 @@ export function scrollToSearch(){
 }
 
 export function scrollToResult(updateAPI, updatePhoneType, updateColor, updateCondition, updateContract, updateMemory,
-  updateMobos, updateModel){
+  updateMobos, updateModel, updateErrorMsg, showErrorDisplay){
   var api = "http://18.216.159.52";
   var searchQuery = "http://ec2-3-15-200-193.us-east-2.compute.amazonaws.com/predict2?brand=" + userSelectedBrand + 
   "&colour=" + encodeURI(userSelectedColor) + "&condition=" + encodeURI(userSelectedCondition) + "&contract=" + encodeURI(userSelectedContract) + 
@@ -51,45 +53,54 @@ export function scrollToResult(updateAPI, updatePhoneType, updateColor, updateCo
 
   //console.log(searchQuery);
 
-  fetch(searchQuery)
-  .then((result)=> result.json())
-  .then(apiData=>{
-    console.log(apiData);
+  //Only fetch if atleast the model has been selected
 
-    if(userSelectedBrand != null){
-      updatePhoneType(userSelectedBrand.charAt(0).toUpperCase() + userSelectedBrand.substring(1));
-    }
+  if(userSelectedModel != null){
+    fetch(searchQuery)
+    .then((result)=> result.json())
+    .then(apiData=>{
+      console.log(apiData);
 
-    if(userSelectedColor != null){
-      updateColor(userSelectedColor.charAt(0).toUpperCase() + userSelectedColor.substring(1));
-    }
+      if(userSelectedBrand != null){
+        updatePhoneType(userSelectedBrand.charAt(0).toUpperCase() + userSelectedBrand.substring(1));
+      }
 
-    if(userSelectedCondition != null){
-      updateCondition(userSelectedCondition.charAt(0).toUpperCase() + userSelectedCondition.substring(1));
-    }
+      if(userSelectedColor != null){
+        updateColor(userSelectedColor.charAt(0).toUpperCase() + userSelectedColor.substring(1));
+      }
 
-    if(userSelectedContract != null){
-      updateContract(userSelectedContract.charAt(0).toUpperCase() + userSelectedContract.substring(1));
-    }
+      if(userSelectedCondition != null){
+        updateCondition(userSelectedCondition.charAt(0).toUpperCase() + userSelectedCondition.substring(1));
+      }
 
-    if(userSelectedMemory != null){
-      updateMemory(userSelectedMemory.charAt(0).toUpperCase() + userSelectedMemory.substring(1) + "GB");
-    }
+      if(userSelectedContract != null){
+        updateContract(userSelectedContract.charAt(0).toUpperCase() + userSelectedContract.substring(1));
+      }
 
-    if(userSelectedMobos != null){
-      updateMobos(userSelectedMobos.charAt(0).toUpperCase() + userSelectedMobos.substring(1));
-    }
+      if(userSelectedMemory != null){
+        updateMemory(userSelectedMemory.charAt(0).toUpperCase() + userSelectedMemory.substring(1) + "GB");
+      }
 
-    if(userSelectedModel != null){
-      updateModel(userSelectedModel.charAt(0).toUpperCase() + userSelectedModel.substring(1));
-    }
-    updateAPI("Average Price $" + Math.round(apiData.predict));
+      if(userSelectedMobos != null){
+        updateMobos(userSelectedMobos.charAt(0).toUpperCase() + userSelectedMobos.substring(1));
+      }
 
-    resultRef.current.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
+      if(userSelectedModel != null){
+        updateModel(userSelectedModel.charAt(0).toUpperCase() + userSelectedModel.substring(1));
+      }
+      updateAPI("Average Price $" + Math.round(apiData.predict));
+      updateErrorMsg("");
+      showErrorDisplay("none")
+
+      resultRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
     });
-  });
+  }else{
+    showErrorDisplay("inline");
+    updateErrorMsg("Atleast a phone model needs to be selected");
+  }
 }
 
 export function brandValue(data){
@@ -236,6 +247,12 @@ export default function HomePage(props) {
   const [model, setModel] = useState(
     null
   )
+  const[errorMsg, setErrorMsg] = useState(
+    ""
+  )
+  const[errorDisplay, setErrorDisplay]= useState(
+    "none"
+  )
 
   return (
     <div>
@@ -249,7 +266,8 @@ export default function HomePage(props) {
         <div className={classes.container} ref={searchRef}>
           <SearchSection updateAPIFunction={setAPIData} setPhoneType={setPhoneType} setColor={setColor}
           setCondition={setCondition} setContract={setContract} setMemory={setMemory} setMobos={setMobos} 
-          setModel={setModel}/>
+          setModel={setModel} setError={setErrorMsg} errorMsg={errorMsg} errorDisplay={errorDisplay} 
+          setErrorDisplay={setErrorDisplay}/>
         </div>
       </div>
 
