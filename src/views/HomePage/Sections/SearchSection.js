@@ -41,7 +41,8 @@ export default function SearchSection(props) {
             <h4 className={classes.title}>Phone type:</h4>
             <Select className={classes.description}
             placeholder="Select a brand"
-            onChange={brandValue}
+            onChange={(event) => { 
+                brandValue(event, props.setModelData, props.setMobosData);}}
             options={loadDataFromJSON("brand")}
             />
         </GridItem>
@@ -87,7 +88,7 @@ export default function SearchSection(props) {
             <Select className={classes.description}
             placeholder="Select a Mobos"
             onChange={mobosValue}
-            options={loadDataFromJSON("mobos")}
+            options={props.mobosData}
             />
         </GridItem>
 
@@ -96,7 +97,7 @@ export default function SearchSection(props) {
             <Select className={classes.description}
             placeholder="Select a Model"
             onChange={modelValue}
-            options={loadDataFromJSON("model")}
+            options={props.modelData}
             />
         </GridItem>
 

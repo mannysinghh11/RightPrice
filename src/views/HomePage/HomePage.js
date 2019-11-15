@@ -16,7 +16,6 @@ import GridItem from "components/Grid/GridItem.js";
 import Button from 'components/CustomButtons/Button.js';
 import HeaderLinks from "components/Header/HeaderLinks.js";
 import Parallax from "components/Parallax/Parallax.js";
-import CustomInput from "components/CustomInput/CustomInput.js";
 import SnackbarContent from "components/Snackbar/SnackbarContent.js";
 
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
@@ -103,9 +102,15 @@ export function scrollToResult(updateAPI, updatePhoneType, updateColor, updateCo
   }
 }
 
-export function brandValue(data){
+export function brandValue(data, updateModelData, updateMobosData){
   console.log(data);
   userSelectedBrand = data.value;
+
+  //Updates models to only show selected brand phones
+  updateModelData(loadDataFromJSON("model", userSelectedBrand));
+
+  //Update mobos to only show selected brand mobos
+  updateMobosData(loadDataFromJSON("mobos", userSelectedBrand));
 }
 
 export function colorValue(data){
@@ -138,7 +143,7 @@ export function modelValue(data){
   userSelectedModel = data.value;
 }
 
-export function loadDataFromJSON(e){
+export function loadDataFromJSON(e, brand){
   switch(e){
     case "brand":{
       var count = Object.keys(data.brand).length;
@@ -198,24 +203,44 @@ export function loadDataFromJSON(e){
     case "mobos":{
       var count = Object.keys(data.mobos).length;
       var mobos = [];
-    
-      //Populate mobos dropdown
-      for(var i = 1; i <= count; i++){
-        mobos.push(data.mobos[i]);
+
+      if(brand != null){
+        //Populate mobos dropdown
+        for(var i = 1; i <= count; i++){
+          mobos.push(data.mobos[i]);
+        }
+      
+        return mobos;
+      }else{
+        //Populate mobos dropdown
+        for(var i = 1; i <= count; i++){
+          mobos.push(data.mobos[i]);
+        }
+      
+        return mobos;
       }
-    
-      return mobos;
     }
     case "model":{
       var count = Object.keys(data.model).length;
       var models = [];
-    
-      //Populate model dropdown
-      for(var i = 1; i <= count; i++){
-        models.push(data.model[i]);
+      if(brand != null){
+        for(var i = 1; i <= count; i++){
+          if(data.model[i].brand == brand){
+            models.push(data.model[i]);
+          }
+          //console.log(data.model[i].brand);
+        }
+      
+        return models;
+
+      }else{
+        //Populate model dropdown
+        for(var i = 1; i <= count; i++){
+          models.push(data.model[i]);
+        }
+      
+        return models;
       }
-    
-      return models;
     }
   }
 }
@@ -253,6 +278,12 @@ export default function HomePage(props) {
   const[errorDisplay, setErrorDisplay]= useState(
     "none"
   )
+  const[modelData, setModelData] = useState(
+    loadDataFromJSON("model")
+  )
+  const[mobosData, setMobosData] = useState(
+    loadDataFromJSON("mobos")
+  )
 
   return (
     <div>
@@ -267,7 +298,8 @@ export default function HomePage(props) {
           <SearchSection updateAPIFunction={setAPIData} setPhoneType={setPhoneType} setColor={setColor}
           setCondition={setCondition} setContract={setContract} setMemory={setMemory} setMobos={setMobos} 
           setModel={setModel} setError={setErrorMsg} errorMsg={errorMsg} errorDisplay={errorDisplay} 
-          setErrorDisplay={setErrorDisplay}/>
+          setErrorDisplay={setErrorDisplay} modelData={modelData} setModelData={setModelData} mobosData={mobosData}
+          setMobosData={setMobosData}/>
         </div>
       </div>
 
