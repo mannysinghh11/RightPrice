@@ -17,9 +17,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import productStyles from "assets/jss/material-kit-react/views/landingPageSections/productStyle.js";
 import stylesTwo from "assets/jss/material-kit-react/tooltipsStyle.js";
 
-import Bc from "./bc.js"
-import Sc from "./scatter.js"
-
 import visualizationOne from "../visualizationOne.jpg"
 import visualizationTwo from "../visualizationTwo.jpg"
 
